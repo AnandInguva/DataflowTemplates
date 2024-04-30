@@ -290,3 +290,5 @@ public final class KafkaToBigQueryAvroIT extends TemplateTestBase {
         .build();
   }
 }
+
+
