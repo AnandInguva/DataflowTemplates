@@ -24,6 +24,15 @@ import com.google.cloud.teleport.v2.options.KafkaToGcsOptions;
 import com.google.cloud.teleport.v2.transforms.FileFormatFactory;
 import com.google.cloud.teleport.v2.utils.DurationUtils;
 import com.google.cloud.teleport.v2.utils.WriteToGCSUtility;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
+import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
+import io.confluent.kafka.serializers.KafkaAvroSerializer;
+import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.generic.GenericRecordBuilder;
 import org.apache.beam.sdk.coders.KvCoder;
 import org.apache.beam.sdk.coders.StringUtf8Coder;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
@@ -32,6 +41,11 @@ import org.apache.beam.sdk.testing.TestPipeline;
 import org.apache.beam.sdk.transforms.Create;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.joda.time.Duration;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,6 +53,16 @@ import org.junit.experimental.categories.Category;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.testcontainers.shaded.com.google.common.io.Resources;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 
 /** Test class for {@link KafkaToGCS}. */
 @RunWith(JUnit4.class)
@@ -127,6 +151,56 @@ public class KafkaToGCSTest {
     assertThat(status, is(notNullValue()));
     assertThat(status, is(equalTo(false)));
   }
+
+  public static KafkaProducer<String, GenericRecord> createStringProducer(String bootstrapServers) {
+    Properties props = new Properties();
+    props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName());
+    props.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, "mock://my-scope");
+    return new KafkaProducer<>(props);
+  }
+
+  @Test
+  public void testSchemaRegistry() throws IOException, RestClientException, ExecutionException, InterruptedException {
+    String bootStrapServer = "https://localhost:9092";
+    String topic = "quickstart-events";
+    SchemaRegistryClient schemaRegistryClient = MockSchemaRegistry.getClientForScope("my-scope");
+
+    String schemaPath1 = "/Users/anandinguva/Desktop/projects/DataflowTemplates/v2/kafka-to-gcs/src/main/resources/KafkaToGcsIT/avro_schema_1.avsc";
+    Schema avroSchema1 = new Schema.Parser().parse(new File(schemaPath1));
+
+    String schemaPath2 = "/Users/anandinguva/Desktop/projects/DataflowTemplates/v2/kafka-to-gcs/src/main/resources/KafkaToGcsIT/avro_schema_2.avsc";
+    Schema avroSchema2 = new Schema.Parser().parse(new File(schemaPath2));
+
+
+    schemaRegistryClient.register("subject", avroSchema1, 1, 1);
+    schemaRegistryClient.register("subject", avroSchema2, 1, 2);
+
+    KafkaProducer<String, GenericRecord> kafkaProducer = createStringProducer(bootStrapServer);
+
+    GenericRecord genericRecord1 = new GenericRecordBuilder(avroSchema1)
+            .set("productId", 1)
+            .set("productName", "test")
+            .build();
+
+//    GenericRecord genericRecord2 = new GenericRecordBuilder(avroSchema2)
+//            .set("productId", 1)
+//            .set("productName", "test2")
+//            .set("productDescription", "Testing schema")
+//            .build();
+
+    GenericRecord genericRecord2 = new GenericRecordBuilder(avroSchema2)
+            .set("name", "anand")
+            .set("age", 10)
+            .set("email", "anandinguva98@gmail.com")
+            .build();
+
+    RecordMetadata recordMetadata1 = kafkaProducer.send(new ProducerRecord<>(topic, "hello", genericRecord1)).get();
+    RecordMetadata recordMetadata2 = kafkaProducer.send(new ProducerRecord<>(topic, "hello", genericRecord2)).get();
+
+  }
+
 
   /** Tests testFileFormat() with a valid File format. */
   @Test
