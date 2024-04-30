@@ -34,6 +34,7 @@ import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
 import org.apache.beam.it.common.PipelineLauncher;
+import org.apache.beam.it.common.PipelineOperator;
 import org.apache.beam.it.common.TestProperties;
 import org.apache.beam.it.common.utils.ResourceManagerUtils;
 import org.apache.beam.it.gcp.TemplateTestBase;
@@ -60,8 +61,8 @@ import org.testcontainers.shaded.com.google.common.io.Resources;
 
 /** Integration test for {@link KafkaToGcs2} */
 @RunWith(JUnit4.class)
-//@TemplateIntegrationTest(KafkaToGcs2.class)
-//@Category(TemplateIntegrationTest.class)
+@TemplateIntegrationTest(KafkaToGcs2.class)
+@Category(TemplateIntegrationTest.class)
 public class KafkaToGcsIT extends TemplateTestBase {
 
   private static final Logger LOG = LoggerFactory.getLogger(KafkaToGcsIT.class);
@@ -215,10 +216,16 @@ public class KafkaToGcsIT extends TemplateTestBase {
       publish(kafkaProducer, topicName, String.valueOf(i), genericRecord1);
       publish(kafkaProducer, topicName, String.valueOf(i), genericRecord2);
     }
+    try {
+      TimeUnit.SECONDS.sleep(3);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
 
     // Act
     PipelineLauncher.LaunchInfo info = launchTemplate(options);
     assertThatPipeline(info).isRunning();
+    System.out.println(info);
   }
 
   private void publish(
