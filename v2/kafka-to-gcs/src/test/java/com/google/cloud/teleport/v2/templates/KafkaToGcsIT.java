@@ -170,6 +170,10 @@ public class KafkaToGcsIT extends TemplateTestBase {
   }
 
   @Test
+  public void testKafkaToGcsAvro() throws RestClientException, IOException {
+    kafkaToGcsAvroConfluentWireFormatWithSchemaRegistryURL(Function.identity());
+  }
+
   public void kafkaToGcsAvroConfluentWireFormatWithSchemaRegistryURL(Function<PipelineLauncher.LaunchConfig.Builder, PipelineLauncher.LaunchConfig.Builder> paramsAdder)
       throws RestClientException, IOException {
     String topicName = kafkaResourceManager.createTopic(testName, 5);
@@ -204,7 +208,7 @@ public class KafkaToGcsIT extends TemplateTestBase {
                         .addParameter("outputDirectory", "gs://anandinguva--test-1/testing")
                         .addParameter("schemaRegistryURL", "mock://test-scope")
         );
-    
+
     for (int i = 1; i < 10; i++) {
       GenericRecord genericRecord1 = createRecord(i, "Dataflow", null);
       GenericRecord genericRecord2 = createRecord(i, "Pub/Sub", String.format("Record with id: %s", i));
