@@ -162,13 +162,13 @@ public class KafkaToBigQueryFlex {
             "Either Schema Registry Connection URL or Confluent Avro Schema Path must be provided for AVRO_CONFLUENT_WIRE_FORMAT.");
       }
 
-      if (options.getSchemaFormat().equals(SchemaFormat.SINGLE_SCHEMA_FILE)) {
+      if (options.getSchemaSource().equals(SchemaFormat.SINGLE_SCHEMA_FILE)) {
         if (!options.getConfluentAvroSchemaPath().isBlank()
             && (options.getOutputTableSpec() != null && options.getOutputTableSpec().isBlank())) {
           throw new IllegalArgumentException(
               "The outputTableSpec parameter is required when using the SINGLE_SCHEMA_FILE schema format.");
         }
-      } else if (options.getSchemaFormat().equals(SchemaFormat.SCHEMA_REGISTRY)) {
+      } else if (options.getSchemaSource().equals(SchemaFormat.SCHEMA_REGISTRY)) {
         if (options.getSchemaRegistryConnectionUrl() != null
             && (options.getOutputDataset() != null && options.getOutputDataset().isBlank())) {
           throw new IllegalArgumentException(
@@ -176,7 +176,7 @@ public class KafkaToBigQueryFlex {
         }
       } else {
         throw new IllegalArgumentException(
-            "Unsupported schemaFormat parameter value: " + options.getSchemaFormat());
+            "Unsupported schemaFormat parameter value: " + options.getSchemaSource());
       }
     }
 
@@ -286,13 +286,13 @@ public class KafkaToBigQueryFlex {
 
   private static WriteResult handleAvroConfluentWireFormat(
       PCollection<KafkaRecord<byte[], byte[]>> kafkaRecords, KafkaToBigQueryFlexOptions options) {
-    if (options.getSchemaFormat().equals(SchemaFormat.SINGLE_SCHEMA_FILE)) {
+    if (options.getSchemaSource().equals(SchemaFormat.SINGLE_SCHEMA_FILE)) {
       return handleSingleSchemaFileFormat(kafkaRecords, options);
-    } else if (options.getSchemaFormat().equals(SchemaFormat.SCHEMA_REGISTRY)) {
+    } else if (options.getSchemaSource().equals(SchemaFormat.SCHEMA_REGISTRY)) {
       return handleSchemaRegistryFormat(kafkaRecords, options);
     } else {
       throw new IllegalArgumentException(
-          "Message format " + options.getSchemaFormat() + " is unsupported.");
+          "Message format " + options.getSchemaSource() + " is unsupported.");
     }
   }
 

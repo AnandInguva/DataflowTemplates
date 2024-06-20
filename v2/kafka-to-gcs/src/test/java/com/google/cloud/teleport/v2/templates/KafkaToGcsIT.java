@@ -86,7 +86,7 @@ public class KafkaToGcsIT extends TemplateTestBase {
     baseKafkaToGcs(
         b ->
             b.addParameter("messageFormat", MessageFormatConstants.AVRO_CONFLUENT_WIRE_FORMAT)
-                .addParameter("schemaFormat", "SINGLE_SCHEMA_FILE")
+                .addParameter("schemaSource", "SINGLE_SCHEMA_FILE")
                 .addParameter("confluentAvroSchemaPath", getGcsPath("avro_schema.avsc")));
   }
 

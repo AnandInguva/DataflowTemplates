@@ -42,7 +42,7 @@ public interface SchemaRegistryOptions extends PipelineOptions {
 
   @TemplateParameter.Enum(
       order = 2,
-      name = "schemaFormat",
+      name = "schemaSource",
       groupName = "Source",
       parentName = "messageFormat",
       parentTriggerValues = {MessageFormatConstants.AVRO_CONFLUENT_WIRE_FORMAT},
@@ -53,18 +53,19 @@ public interface SchemaRegistryOptions extends PipelineOptions {
       description = "Schema Source",
       optional = true,
       helpText =
-          "The Kafka schema format. Can be provided as SINGLE_SCHEMA_FILE or SCHEMA_REGISTRY. "
-              + "If SINGLE_SCHEMA_FILE is specified, all messages should have the schema mentioned in the avro schema file. "
-              + "If SCHEMA_REGISTRY is specified, the messages can have either a single schema or multiple schemas.")
+          "The Kafka schema source. It can be provided as SINGLE_SCHEMA_FILE or SCHEMA_REGISTRY. "
+              + "If SINGLE_SCHEMA_FILE is specified, all the kafka messages should have the schema mentioned in the avro schema file. "
+              + "If SCHEMA_REGISTRY is specified, the kafka messages can have either a single schema or multiple schemas that are registered"
+              + "in the schema registry.")
   @Default.String(SchemaFormat.SINGLE_SCHEMA_FILE)
-  String getSchemaFormat();
+  String getSchemaSource();
 
-  void setSchemaFormat(String value);
+  void setSchemaSource(String value);
 
   @TemplateParameter.GcsReadFile(
       order = 3,
       groupName = "Source",
-      parentName = "schemaFormat",
+      parentName = "schemaSource",
       parentTriggerValues = {SchemaFormat.SINGLE_SCHEMA_FILE},
       description = "Cloud Storage path to the Avro schema file",
       optional = true,
@@ -79,7 +80,7 @@ public interface SchemaRegistryOptions extends PipelineOptions {
   @TemplateParameter.Text(
       order = 4,
       groupName = "Source",
-      parentName = "schemaFormat",
+      parentName = "schemaSource",
       parentTriggerValues = {SchemaFormat.SCHEMA_REGISTRY},
       description = "Schema Registry Connection URL",
       optional = true,

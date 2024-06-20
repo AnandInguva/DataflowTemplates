@@ -62,7 +62,7 @@ public abstract class WriteTransform
                   .setSchemaRegistrySslConfig(KafkaConfig.fromSchemaRegistryOptions(options()))
                   .setConfluentSchemaPath(options().getConfluentAvroSchemaPath())
                   .setBinaryAvroSchemaPath(options().getBinaryAvroSchemaPath())
-                  .setSchemaFormat(options().getSchemaFormat())
+                  .setSchemaFormat(options().getSchemaSource())
                   .setWindowDuration(options().getWindowDuration())
                   .build());
     } else {

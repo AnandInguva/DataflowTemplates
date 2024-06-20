@@ -117,7 +117,7 @@ public final class KafkaToBigQueryFlexAvroIT extends TemplateTestBase {
     baseKafkaToBigQueryAvro(
         b ->
             b.addParameter("messageFormat", "AVRO_CONFLUENT_WIRE_FORMAT")
-                .addParameter("schemaFormat", "SINGLE_SCHEMA_FILE")
+                .addParameter("schemaSource", "SINGLE_SCHEMA_FILE")
                 .addParameter("confluentAvroSchemaPath", getGcsPath("avro_schema.avsc"))
                 .addParameter("writeMode", "SINGLE_TABLE_NAME")
                 .addParameter("outputTableSpec", toTableSpecLegacy(tableId))
@@ -135,7 +135,7 @@ public final class KafkaToBigQueryFlexAvroIT extends TemplateTestBase {
     baseKafkaToBigQueryAvro(
         b ->
             b.addParameter("messageFormat", "AVRO_CONFLUENT_WIRE_FORMAT")
-                .addParameter("schemaFormat", "SINGLE_SCHEMA_FILE")
+                .addParameter("schemaSource", "SINGLE_SCHEMA_FILE")
                 .addParameter("confluentAvroSchemaPath", getGcsPath("avro_schema.avsc"))
                 .addParameter("writeMode", "SINGLE_TABLE_NAME")
                 .addParameter("outputTableSpec", toTableSpecLegacy(tableId))
@@ -149,7 +149,7 @@ public final class KafkaToBigQueryFlexAvroIT extends TemplateTestBase {
     baseKafkaToBigQueryAvro(
         b ->
             b.addParameter("messageFormat", "AVRO_CONFLUENT_WIRE_FORMAT")
-                .addParameter("schemaFormat", "SCHEMA_REGISTRY")
+                .addParameter("schemaSource", "SCHEMA_REGISTRY")
                 .addParameter("schemaRegistryConnectionUrl", "http://10.128.0.60:8081")
                 .addParameter("writeMode", "DYNAMIC_TABLE_NAMES")
                 .addParameter("outputProject", PROJECT)
@@ -165,7 +165,7 @@ public final class KafkaToBigQueryFlexAvroIT extends TemplateTestBase {
     baseKafkaToBigQueryAvro(
         b ->
             b.addParameter("messageFormat", "AVRO_CONFLUENT_WIRE_FORMAT")
-                .addParameter("schemaFormat", "SCHEMA_REGISTRY")
+                .addParameter("schemaSource", "SCHEMA_REGISTRY")
                 .addParameter("schemaRegistryConnectionUrl", "http://10.128.0.60:8081")
                 .addParameter("writeMode", "DYNAMIC_TABLE_NAMES")
                 .addParameter("outputProject", PROJECT)
@@ -183,7 +183,7 @@ public final class KafkaToBigQueryFlexAvroIT extends TemplateTestBase {
     baseKafkaToBigQueryAvro(
         b ->
             b.addParameter("messageFormat", "AVRO_BINARY_ENCODING")
-                .addParameter("schemaFormat", "SINGLE_SCHEMA_FILE")
+                .addParameter("schemaSource", "SINGLE_SCHEMA_FILE")
                 .addParameter("binaryAvroSchemaPath", getGcsPath("avro_schema.avsc"))
                 .addParameter("writeMode", "SINGLE_TABLE_NAME")
                 .addParameter("outputTableSpec", toTableSpecLegacy(tableId))
@@ -201,7 +201,7 @@ public final class KafkaToBigQueryFlexAvroIT extends TemplateTestBase {
     baseKafkaToBigQueryAvro(
         b ->
             b.addParameter("messageFormat", "AVRO_BINARY_ENCODING")
-                .addParameter("schemaFormat", "SINGLE_SCHEMA_FILE")
+                .addParameter("schemaSource", "SINGLE_SCHEMA_FILE")
                 .addParameter("binaryAvroSchemaPath", getGcsPath("avro_schema.avsc"))
                 .addParameter("writeMode", "SINGLE_TABLE_NAME")
                 .addParameter("outputTableSpec", toTableSpecLegacy(tableId))
@@ -218,7 +218,7 @@ public final class KafkaToBigQueryFlexAvroIT extends TemplateTestBase {
     baseKafkaToBigQueryAvro(
         b ->
             b.addParameter("messageFormat", "AVRO_CONFLUENT_WIRE_FORMAT")
-                .addParameter("schemaFormat", "SINGLE_SCHEMA_FILE")
+                .addParameter("schemaSource", "SINGLE_SCHEMA_FILE")
                 .addParameter("confluentAvroSchemaPath", getGcsPath("avro_schema.avsc"))
                 .addParameter("writeMode", "SINGLE_TABLE_NAME")
                 .addParameter("outputTableSpec", toTableSpecLegacy(tableId))
@@ -283,8 +283,8 @@ public final class KafkaToBigQueryFlexAvroIT extends TemplateTestBase {
 
     if (options.getParameter("messageFormat") != null
         && options.getParameter("messageFormat").equals("AVRO_CONFLUENT_WIRE_FORMAT")
-        && options.getParameter("schemaFormat") != null
-        && options.getParameter("schemaFormat").equals("SCHEMA_REGISTRY")
+        && options.getParameter("schemaSource") != null
+        && options.getParameter("schemaSource").equals("SCHEMA_REGISTRY")
         && options.getParameter("schemaRegistryConnectionUrl") != null) {
 
       publishDoubleSchemaMessages(topicName);
